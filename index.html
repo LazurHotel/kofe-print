@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кофе-Принт • Стокгольм • Кофейня + Копицентр</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:wght@700&amp;display=swap');
+        
+        :root {
+            --coffee: #6B4423;
+            --accent: #D35400;
+            --teal: #1ABC9C;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .heading-serif {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+        }
+
+        .coffee-gradient {
+            background: linear-gradient(135deg, #6B4423 0%, #8B5E3C 100%);
+        }
+
+        .section-header {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(to right, #D35400, #1ABC9C);
+            border-radius: 3px;
+        }
+
+        .menu-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .nav-active {
+            color: #D35400;
+            font-weight: 600;
+        }
+
+        .print-option {
+            transition: all 0.2s ease;
+        }
+
+        .print-option.active {
+            border-color: #1ABC9C;
+            background-color: #E8F8F5;
+        }
+
+        .stat-card {
+            transition: transform 0.3s ease;
+        }
+
+        .warm-shadow {
+            box-shadow: 0 10px 15px -3px rgb(107 68 35 / 0.1), 0 4px 6px -4px rgb(107 68 35 / 0.1);
+        }
+
+        .kid-friendly {
+            background: linear-gradient(145deg, #FFF7ED, #FEF3C7);
+        }
+
+        .student-zone {
+            background: linear-gradient(145deg, #F0FDF4, #DCFCE7);
+        }
+
+        .family-zone {
+            background: linear-gradient(145deg, #FDF2F8, #FCE7F3);
+        }
+
+        .nav-scrolled {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .modal {
+            animation: modalPop 0.3s ease forwards;
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .coffee-bean {
+            animation: beanFloat 3s ease-in-out infinite;
+        }
+
+        .print-icon {
+            animation: printPulse 2s ease-in-out infinite;
+        }
+
+        .service-grid {
+            scrollbar-width: thin;
+            scrollbar-color: #D35400 #FEF3C7;
+        }
+
+        .metric-value {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-[#FDF8F3] text-[#3F2A1D]">
+    <!-- NAV -->
+    <nav id="nav" class="bg-white border-b border-[#E8DFD0] sticky top-0 z-50 transition-all">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-x-3">
+                    <div class="w-12 h-12 coffee-gradient rounded-2xl flex items-center justify-center shadow-inner">
+                        <div class="flex items-center justify-center">
+                            <i class="fa-solid fa-mug-hot text-white text-3xl mr-1"></i>
+                            <i class="fa-solid fa-print text-white text-2xl -ml-1"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="font-bold text-3xl tracking-tighter" style="color: #6B4423;">Кофе-Принт</span>
+                        <div class="text-[10px] text-[#8B5E3C] -mt-1 tracking-[3px]">STOCKHOLM</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium">
+                    <a href="#menu" class="hover:text-[#D35400] transition-colors">Меню</a>
+                    <a href="#print" class="hover:text-[#D35400] transition-colors">Печать</a>
+                    <a href="#spaces" class="hover:text-[#D35400] transition-colors">Пространства</a>
+                    <a href="#events" class="hover:text-[#D35400] transition-colors">События</a>
+                    <a href="#loyalty" class="hover:text-[#D35400] transition-colors">Лояльность</a>
+                </div>
+
+                <div class="flex items-center gap-x-3">
+                    <!-- Manager Button -->
+                    <button onclick="showManagerDashboard()" 
+                            class="hidden md:flex items-center gap-x-2 px-4 py-2 text-sm font-semibold text-[#6B4423] hover:bg-[#FEF3C7] rounded-2xl transition-all border border-[#E8DFD0]">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span class="hidden lg:inline">Для управляющего</span>
+                    </button>
+
+                    <!-- Cart -->
+                    <div onclick="showCart()" class="relative flex items-center justify-center w-11 h-11 hover:bg-[#FEF3C7] rounded-2xl cursor-pointer transition-all border border-[#E8DFD0]">
+                        <i class="fa-solid fa-shopping-bag text-xl text-[#6B4423]"></i>
+                        <span id="cart-count" 
+                              class="absolute -top-1 -right-1 bg-[#D35400] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">0</span>
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <div class="md:hidden">
+                        <button onclick="toggleMobileNav()" class="w-11 h-11 flex items-center justify-center text-[#6B4423]">
+                            <i class="fa-solid fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="relative h-[100dvh] min-h-[620px] flex items-center overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(#E8DFD0_0.8px,transparent_1px)] bg-[length:4px_4px]"></div>
+        
+        <!-- Background Image -->
+        <div class="absolute inset-0">
+            <img src="https://picsum.photos/id/1015/2000/1400" alt="Уютная кофейня с зоной печати" 
+                 class="w-full h-full object-cover brightness-[0.65]">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#3F2A1D]/80 via-[#3F2A1D]/40 to-transparent"></div>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-6 z-10">
+            <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-x-2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-3xl mb-6 text-sm font-semibold shadow">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-emerald-700">Открыто сейчас • до 22:00</span>
+                </div>
+                
+                <h1 class="text-6xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter">
+                    Кофе.<br>
+                    Печать.<br>
+                    <span class="text-[#FCD34D]">Вдохновение.</span>
+                </h1>
+                
+                <p class="mt-6 max-w-md text-xl text-white/90 font-light">
+                    Гибрид кофейни и копицентра в сердце Стокгольма.<br>
+                    Идеальное место для студентов, школьников и семей.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mt-10">
+                    <button onclick="document.getElementById('menu').scrollIntoView({ behavior: 'smooth' })" 
+                            class="px-8 py-4 bg-white hover:bg-[#FEF3C7] text-[#6B4423] font-bold rounded-3xl flex items-center gap-x-3 shadow-xl transition-all active:scale-[0.985]">
+                        <span>Посмотреть меню</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    
+                    <button onclick="document.getElementById('print').scrollIntoView({ behavior: 'smooth' })" 
+                            class="px-8 py-4 border-2 border-white/70 hover:bg-white/10 text-white font-semibold rounded-3xl flex items-center gap-x-3 transition-all">
+                        <i class="fa-solid fa-print mr-2"></i>
+                        <span>Рассчитать печать</span>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-x-6 mt-12 text-white/80 text-sm">
+                    <div class="flex -space-x-2">
+                        <img src="https://picsum.photos/id/64/32/32" class="w-8 h-8 rounded-full ring-2 ring-white/50" alt="">
+                        <img src="https://picsum.photos/id/1005/32/32" class="w-8 h-8 rounded-full ring-2 ring-white/50" alt="">
+                        <img src="https://picsum.photos/id/201/32/32" class="w-8 h-8 rounded-full ring-2 ring-white/50" alt="">
+                    </div>
+                    <div>Более <span class="font-semibold text-white">12 400</span> довольных гостей за 3 месяца</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating badges -->
+        <div class="absolute bottom-12 right-6 hidden xl:block">
+            <div class="bg-white/95 backdrop-blur rounded-3xl p-4 shadow-xl max-w-[240px]">
+                <div class="flex items-center gap-3">
+                    <div class="text-4xl">☕🖋️</div>
+                    <div>
+                        <div class="font-bold text-sm">Специально для вас</div>
+                        <div class="text-xs text-[#8B5E3C]">Печать на пенке латте • 20 SEK</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- STATS BAR -->
+    <div class="bg-white border-b border-[#E8DFD0]">
+        <div class="max-w-7xl mx-auto px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+                <div class="text-3xl font-black text-[#6B4423]">3</div>
+                <div class="text-xs tracking-widest text-[#8B5E3C] font-medium">МЕСЯЦА РАБОТЫ</div>
+            </div>
+            <div>
+                <div class="text-3xl font-black text-[#6B4423]">12400+</div>
+                <div class="text-xs tracking-widest text-[#8B5E3C] font-medium">ГОСТЕЙ</div>
+            </div>
+            <div>
+                <div class="text-3xl font-black text-[#6B4423]">87 450</div>
+                <div class="text-xs tracking-widest text-[#8B5E3C] font-medium">СТРАНИЦ НАПЕЧАТАНО</div>
+            </div>
+            <div>
+                <div class="text-3xl font-black text-emerald-600">4.97</div>
+                <div class="text-xs tracking-widest text-[#8B5E3C] font-medium">СРЕДНЯЯ ОЦЕНКА</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section class="max-w-7xl mx-auto px-6 py-16">
+        <div class="grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-7">
+                <div class="uppercase tracking-[3px] text-xs font-semibold text-[#D35400]">НАША ИСТОРИЯ</div>
+                <h2 class="heading-serif text-5xl leading-none mt-3">Место, где<br>учёба встречается<br>с уютом</h2>
+                
+                <div class="mt-8 text-lg text-[#5C4634] max-w-[42ch]">
+                    Мы открылись в январе 2026 года в Стокгольме, чтобы объединить лучшее из двух миров: 
+                    ароматный кофе и профессиональную печать. Здесь студенты готовятся к экзаменам, 
+                    школьники распечатывают рефераты, а семьи создают памятные фотокниги за одним столом.
+                </div>
+                
+                <div class="mt-8 flex items-center gap-x-8">
+                    <div>
+                        <div class="font-semibold">Анна Линдквист</div>
+                        <div class="text-sm text-[#8B5E3C]">Основательница • Бывший бариста и владелец копицентра</div>
+                    </div>
+                    <div class="h-px flex-1 bg-[#E8DFD0]"></div>
+                </div>
+            </div>
+            
+            <div class="md:col-span-5">
+                <div class="bg-white rounded-3xl p-8 warm-shadow border border-[#E8DFD0]">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <div class="text-sm text-[#8B5E3C]">НАШИ ЦЕННОСТИ</div>
+                            <div class="text-2xl font-bold mt-1">Уют • Скорость • Творчество</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div class="flex gap-4">
+                            <i class="fa-solid fa-graduation-cap text-xl text-[#1ABC9C] mt-0.5"></i>
+                            <div><span class="font-semibold">Для студентов:</span> бесплатный Wi-Fi 1 Гбит/с, розетки у каждого места, скидка 15% по студенческому билету</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <i class="fa-solid fa-child text-xl text-[#D35400] mt-0.5"></i>
+                            <div><span class="font-semibold">Для школьников:</span> бесплатная печать до 20 страниц в день при заказе напитка, детская зона с раскрасками</div>
+                        </div>
+                        <div class="flex gap-4">
+                            <i class="fa-solid fa-users text-xl text-[#6B4423] mt-0.5"></i>
+                            <div><span class="font-semibold">Для семей:</span> семейный пакет, детское меню, мастер-классы по созданию фотокниг каждую субботу</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="max-w-7xl mx-auto px-6 py-16 bg-white border-y border-[#E8DFD0]">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <span class="uppercase tracking-widest text-xs font-bold text-[#D35400]">ЧТО У НАС ЕСТЬ</span>
+                <h2 class="heading-serif text-5xl">Меню</h2>
+            </div>
+            <div class="hidden md:flex items-center gap-2 text-sm">
+                <div onclick="filterMenu('all')" class="menu-filter active px-5 py-2 rounded-2xl cursor-pointer bg-[#6B4423] text-white text-sm font-medium" data-filter="all">Всё</div>
+                <div onclick="filterMenu('coffee')" class="menu-filter px-5 py-2 rounded-2xl cursor-pointer hover:bg-[#FEF3C7] text-sm font-medium" data-filter="coffee">Кофе</div>
+                <div onclick="filterMenu('drinks')" class="menu-filter px-5 py-2 rounded-2xl cursor-pointer hover:bg-[#FEF3C7] text-sm font-medium" data-filter="drinks">Напитки</div>
+                <div onclick="filterMenu('food')" class="menu-filter px-5 py-2 rounded-2xl cursor-pointer hover:bg-[#FEF3C7] text-sm font-medium" data-filter="food">Еда</div>
+                <div onclick="filterMenu('kids')" class="menu-filter px-5 py-2 rounded-2xl cursor-pointer hover:bg-[#FEF3C7] text-sm font-medium" data-filter="kids">Для детей</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="menu-grid">
+            <!-- Populated by JS -->
+        </div>
+        
+        <div class="text-center mt-8">
+            <button onclick="showCart()" class="inline-flex items-center gap-x-3 px-8 py-3 bg-[#6B4423] hover:bg-[#5A3820] transition text-white font-semibold rounded-3xl">
+                <i class="fa-solid fa-shopping-bag"></i>
+                <span>Перейти в корзину</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- PRINT SERVICES -->
+    <section id="print" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-x-2 bg-[#E8F8F5] text-[#1ABC9C] px-4 py-1 rounded-3xl text-sm font-semibold mb-4">
+                <i class="fa-solid fa-print"></i> 
+                <span>ПРОФЕССИОНАЛЬНАЯ ПЕЧАТЬ ЗА 5 МИНУТ</span>
+            </div>
+            <h2 class="heading-serif text-5xl">Печать и копирование</h2>
+            <p class="text-xl text-[#5C4634] mt-3 max-w-md mx-auto">Быстро, качественно и с душой. Для студентов, школьников и семей.</p>
+        </div>
+        
+        <div class="grid lg:grid-cols-5 gap-8">
+            
+            <!-- Calculator -->
+            <div class="lg:col-span-3 bg-white rounded-3xl p-8 border border-[#E8DFD0] warm-shadow">
+                <h3 class="font-bold text-2xl mb-6 flex items-center gap-x-3">
+                    <i class="fa-solid fa-calculator text-[#1ABC9C]"></i> 
+                    <span>Калькулятор стоимости</span>
+                </h3>
+                
+                <div class="space-y-8">
+                    <!-- Type -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-3">Тип печати</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div onclick="selectPrintType(this, 'bw')" class="print-option cursor-pointer border-2 border-[#E8DFD0] active p-4 rounded-2xl text-center" id="type-bw">
+                                <i class="fa-solid fa-file-lines text-3xl mb-2 text-[#6B4423]"></i>
+                                <div class="font-bold">Ч/Б</div>
+                                <div class="text-xs text-emerald-600">2.5 SEK/стр</div>
+                            </div>
+                            <div onclick="selectPrintType(this, 'color')" class="print-option cursor-pointer border-2 border-[#E8DFD0] p-4 rounded-2xl text-center" id="type-color">
+                                <i class="fa-solid fa-file-image text-3xl mb-2 text-[#D35400]"></i>
+                                <div class="font-bold">Цветная</div>
+                                <div class="text-xs text-emerald-600">6 SEK/стр</div>
+                            </div>
+                            <div onclick="selectPrintType(this, 'photo')" class="print-option cursor-pointer border-2 border-[#E8DFD0] p-4 rounded-2xl text-center" id="type-photo">
+                                <i class="fa-solid fa-camera text-3xl mb-2 text-violet-600"></i>
+                                <div class="font-bold">Фото</div>
+                                <div class="text-xs text-emerald-600">18 SEK/стр</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Количество страниц</label>
+                            <div class="flex items-center border border-[#E8DFD0] rounded-2xl overflow-hidden">
+                                <button onclick="changePages(-1)" class="px-4 py-3 text-xl font-light hover:bg-[#FEF3C7] active:bg-[#F5E8C7] transition">-</button>
+                                <input type="number" id="pages" value="10" oninput="calculatePrintPrice()" 
+                                       class="w-full text-center font-mono text-2xl font-bold border-x border-[#E8DFD0] py-2 outline-none">
+                                <button onclick="changePages(1)" class="px-4 py-3 text-xl font-light hover:bg-[#FEF3C7] active:bg-[#F5E8C7] transition">+</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Двусторонняя печать</label>
+                            <div class="flex items-center h-[54px]">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" id="duplex" onchange="calculatePrintPrice()" checked class="accent-[#1ABC9C] w-5 h-5">
+                                    <span class="ml-3 text-sm">Да, экономим бумагу (−10%)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-3">Дополнительные услуги</label>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <label class="flex items-center gap-x-3 p-3 border border-[#E8DFD0] rounded-2xl cursor-pointer hover:bg-[#FEF3C7]">
+                                <input type="checkbox" id="laminate" onchange="calculatePrintPrice()" class="accent-[#1ABC9C]">
+                                <span>Ламинирование (+15 SEK/стр)</span>
+                            </label>
+                            <label class="flex items-center gap-x-3 p-3 border border-[#E8DFD0] rounded-2xl cursor-pointer hover:bg-[#FEF3C7]">
+                                <input type="checkbox" id="staple" onchange="calculatePrintPrice()" class="accent-[#1ABC9C]">
+                                <span>Скрепление (+8 SEK)</span>
+                            </label>
+                            <label class="flex items-center gap-x-3 p-3 border border-[#E8DFD0] rounded-2xl cursor-pointer hover:bg-[#FEF3C7]">
+                                <input type="checkbox" id="bind" onchange="calculatePrintPrice()" class="accent-[#1ABC9C]">
+                                <span>Мягкий переплёт (+45 SEK)</span>
+                            </label>
+                            <label class="flex items-center gap-x-3 p-3 border border-[#E8DFD0] rounded-2xl cursor-pointer hover:bg-[#FEF3C7]">
+                                <input type="checkbox" id="express" onchange="calculatePrintPrice()" class="accent-[#1ABC9C]">
+                                <span>Экспресс 15 мин (+25 SEK)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 border-t flex items-end justify-between">
+                        <div>
+                            <div class="text-sm text-[#8B5E3C]">ИТОГО</div>
+                            <div id="print-total" class="text-6xl font-black tabular-nums text-[#6B4423]">125</div>
+                            <div class="text-xs -mt-1 text-[#8B5E3C]">SEK • включая НДС</div>
+                        </div>
+                        
+                        <button onclick="addPrintToCart()" 
+                                class="px-10 py-4 bg-[#1ABC9C] hover:bg-[#16A085] text-white font-bold rounded-3xl flex items-center gap-x-3 transition-all active:scale-95">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Добавить в заказ</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upload & Order -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-8 border border-[#E8DFD0] warm-shadow flex flex-col">
+                <h3 class="font-bold text-2xl mb-4">Загрузить файлы</h3>
+                
+                <div id="drop-zone" 
+                     class="flex-1 border-2 border-dashed border-[#D35400] rounded-3xl flex flex-col items-center justify-center p-8 text-center hover:bg-[#FEF3C7]/50 transition-all cursor-pointer mb-6"
+                     onclick="document.getElementById('file-input').click()">
+                    <i class="fa-solid fa-cloud-upload-alt text-5xl text-[#D35400] mb-4"></i>
+                    <div class="font-semibold">Перетащите файлы сюда</div>
+                    <div class="text-xs text-[#8B5E3C] mt-1">PDF, DOCX, JPG, PNG • до 50 МБ</div>
+                    <input type="file" id="file-input" multiple class="hidden" onchange="handleFileUpload(event)">
+                </div>
+                
+                <div id="uploaded-files" class="space-y-2 mb-6 min-h-[60px]"></div>
+                
+                <button onclick="submitPrintOrder()" 
+                        class="mt-auto w-full py-4 bg-gradient-to-r from-[#D35400] to-[#E85D04] text-white font-bold rounded-3xl flex items-center justify-center gap-x-3 hover:brightness-105 transition-all">
+                    <span>Отправить заказ на печать</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+                
+                <div class="text-center text-[10px] text-[#8B5E3C] mt-3">Готовность: 5–15 минут • Самовывоз или доставка по Стокгольму</div>
+            </div>
+            
+        </div>
+        
+        <!-- Quick services -->
+        <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white border border-[#E8DFD0] rounded-2xl p-5 text-center hover:border-[#1ABC9C] transition cursor-pointer" onclick="quickPrintService('diploma')">
+                <i class="fa-solid fa-graduation-cap text-3xl text-[#6B4423]"></i>
+                <div class="font-bold mt-3">Переплёт дипломов</div>
+                <div class="text-xs text-emerald-600">от 149 SEK • 10 мин</div>
+            </div>
+            <div class="bg-white border border-[#E8DFD0] rounded-2xl p-5 text-center hover:border-[#1ABC9C] transition cursor-pointer" onclick="quickPrintService('photo')">
+                <i class="fa-solid fa-images text-3xl text-violet-600"></i>
+                <div class="font-bold mt-3">Фотокниги</div>
+                <div class="text-xs text-emerald-600">от 299 SEK • 30 мин</div>
+            </div>
+            <div class="bg-white border border-[#E8DFD0] rounded-2xl p-5 text-center hover:border-[#1ABC9C] transition cursor-pointer" onclick="quickPrintService('mug')">
+                <i class="fa-solid fa-mug-hot text-3xl text-[#D35400]"></i>
+                <div class="font-bold mt-3">Печать на кружках</div>
+                <div class="text-xs text-emerald-600">от 189 SEK • 20 мин</div>
+            </div>
+            <div class="bg-white border border-[#E8DFD0] rounded-2xl p-5 text-center hover:border-[#1ABC9C] transition cursor-pointer" onclick="quickPrintService('kids')">
+                <i class="fa-solid fa-paint-brush text-3xl text-pink-500"></i>
+                <div class="font-bold mt-3">Детские рисунки</div>
+                <div class="text-xs text-emerald-600">Бесплатно при заказе от 79 SEK</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SPACES -->
+    <section id="spaces" class="bg-[#FEF3C7] py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <span class="uppercase text-xs tracking-[3px] font-bold text-[#D35400]">ПРОСТРАНСТВО ДЛя ВСЕХ</span>
+                <h2 class="heading-serif text-5xl mt-2">Зоны, где хочется оставаться</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Student Zone -->
+                <div class="student-zone rounded-3xl overflow-hidden border border-emerald-200 group">
+                    <div class="h-48 bg-[url('https://picsum.photos/id/1018/600/400')] bg-cover relative">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                        <div class="absolute top-4 right-4 bg-white/90 text-emerald-700 text-xs font-bold px-3 py-1 rounded-2xl flex items-center gap-1">
+                            <i class="fa-solid fa-wifi"></i> 1 Гбит/с
+                        </div>
+                    </div>
+                    <div class="p-7">
+                        <div class="flex items-center gap-x-3 mb-3">
+                            <i class="fa-solid fa-laptop text-3xl text-emerald-600"></i>
+                            <div>
+                                <div class="font-black text-2xl">Студенческая зона</div>
+                                <div class="text-emerald-700 text-sm">Тихо • Уютно • Продуктивно</div>
+                            </div>
+                        </div>
+                        
+                        <ul class="space-y-2 text-sm mb-6">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> <span>20 рабочих мест с розетками и лампами</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> <span>Принтер самообслуживания (бесплатно 30 стр/день)</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-1"></i> <span>Скидка 15% студентам + бесплатный кофе при печати &gt;50 стр</span></li>
+                        </ul>
+                        
+                        <button onclick="bookZone('student')" class="w-full py-3 border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-semibold rounded-2xl text-sm transition">Забронировать место</button>
+                    </div>
+                </div>
+                
+                <!-- Family Zone -->
+                <div class="family-zone rounded-3xl overflow-hidden border border-pink-200 group">
+                    <div class="h-48 bg-[url('https://picsum.photos/id/1027/600/400')] bg-cover relative">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
+                        <div class="absolute top-4 right-4 bg-white/90 text-pink-600 text-xs font-bold px-3 py-1 rounded-2xl">С детьми</div>
+                    </div>
+                    <div class="p-7">
+                        <div class="flex items-center gap-x-3 mb-3">
+                            <i class="fa-solid fa-child text-3xl text-pink-600"></i>
+                            <div>
+                                <div class="font-black text-2xl">Семейный уголок</div>
+                                <div class="text-pink-700 text-sm">Игры • Творчество • Радость</div>
+                            </div>
+                        </div>
+                        
+                        <ul class="space-y-2 text-sm mb-6">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-pink-500 mt-1"></i> <span>Мягкий коврик + игрушки для малышей</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-pink-500 mt-1"></i> <span>Стол для рисования и печати детский работ</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-pink-500 mt-1"></i> <span>Бесплатная печать рисунков + 1 напиток родителю</span></li>
+                        </ul>
+                        
+                        <button onclick="bookZone('family')" class="w-full py-3 border border-pink-600 text-pink-700 hover:bg-pink-50 font-semibold rounded-2xl text-sm transition">Забронировать семейный стол</button>
+                    </div>
+                </div>
+                
+                <!-- Creative / Print Zone -->
+                <div class="bg-gradient-to-br from-amber-50 to-orange-100 rounded-3xl overflow-hidden border border-amber-200 group">
+                    <div class="h-48 bg-[url('https://picsum.photos/id/106/600/400')] bg-cover relative">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
+                        <div class="absolute top-4 right-4 bg-white/90 text-amber-700 text-xs font-bold px-3 py-1 rounded-2xl">Творчество</div>
+                    </div>
+                    <div class="p-7">
+                        <div class="flex items-center gap-x-3 mb-3">
+                            <i class="fa-solid fa-palette text-3xl text-amber-600"></i>
+                            <div>
+                                <div class="font-black text-2xl">Творческая мастерская</div>
+                                <div class="text-amber-700 text-sm">Печать + дизайн + кофе</div>
+                            </div>
+                        </div>
+                        
+                        <ul class="space-y-2 text-sm mb-6">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-amber-500 mt-1"></i> <span>Профессиональный принтер + плоттер</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-amber-500 mt-1"></i> <span>Мастер-классы по фотокнигам и дизайну</span></li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-amber-500 mt-1"></i> <span>Печать на кружках, футболках, холсте</span></li>
+                        </ul>
+                        
+                        <button onclick="bookZone('creative')" class="w-full py-3 border border-amber-600 text-amber-700 hover:bg-amber-50 font-semibold rounded-2xl text-sm transition">Забронировать мастерскую</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="events" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <span class="uppercase tracking-[2.5px] text-xs font-bold text-[#D35400]">ЧТО ПРОИсХОДИТ</span>
+                <h2 class="heading-serif text-5xl">События и активности</h2>
+            </div>
+            <a href="#" class="hidden md:flex items-center text-sm font-semibold text-[#D35400] hover:underline">Смотреть всё в Telegram <i class="fa-solid fa-arrow-right ml-2"></i></a>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Event 1 -->
+            <div class="bg-white rounded-3xl border border-[#E8DFD0] overflow-hidden group">
+                <div class="px-6 pt-6 pb-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest text-emerald-600 font-bold">ЕЖЕНЕДЕЛЬНО • ПН 17:00</div>
+                            <div class="font-bold text-xl mt-1">«Домашка с кофе»</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs bg-emerald-100 text-emerald-700 px-3 py-0.5 rounded">Бесплатно</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-sm text-[#5C4634]">Помощь с домашними заданиями от репетиторов + бесплатная печать 15 страниц + горячий шоколад для школьников.</div>
+                </div>
+                <div class="px-6 py-4 bg-[#FEF3C7] flex justify-between items-center text-sm">
+                    <div class="font-medium">Следующее: 3 февраля</div>
+                    <button onclick="signUpEvent(1, this)" class="text-emerald-700 hover:text-emerald-900 font-semibold flex items-center gap-x-1 text-xs">ЗАПИСАТЬСЯ <i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                </div>
+            </div>
+            
+            <!-- Event 2 -->
+            <div class="bg-white rounded-3xl border border-[#E8DFD0] overflow-hidden group">
+                <div class="px-6 pt-6 pb-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest text-pink-600 font-bold">СУББОТА 11:00</div>
+                            <div class="font-bold text-xl mt-1">Мастер-класс «Моя фотокнига»</div>
+                        </div>
+                        <div class="text-right text-xs bg-pink-100 text-pink-700 px-3 py-0.5 rounded">Семейный</div>
+                    </div>
+                    <div class="mt-3 text-sm text-[#5C4634]">Создайте семейный фотоальбом за 90 минут. Печать + переплёт включены. Дети от 5 лет.</div>
+                </div>
+                <div class="px-6 py-4 bg-[#FDF2F8] flex justify-between items-center text-sm">
+                    <div class="font-medium">99 SEK / человек</div>
+                    <button onclick="signUpEvent(2, this)" class="text-pink-700 hover:text-pink-900 font-semibold flex items-center gap-x-1 text-xs">ЗАПИСАТЬСЯ <i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                </div>
+            </div>
+            
+            <!-- Event 3 -->
+            <div class="bg-white rounded-3xl border border-[#E8DFD0] overflow-hidden group">
+                <div class="px-6 pt-6 pb-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest text-violet-600 font-bold">ЧЕТВЕРГ 19:00</div>
+                            <div class="font-bold text-xl mt-1">«Студенческий нетворкинг»</div>
+                        </div>
+                        <div class="text-right text-xs bg-violet-100 text-violet-700 px-3 py-0.5 rounded">18+</div>
+                    </div>
+                    <div class="mt-3 text-sm text-[#5C4634]">Общение, обмен идеями, печать резюме и портфолио + скидка на латте 30%. Присоединяйся!</div>
+                </div>
+                <div class="px-6 py-4 bg-violet-50 flex justify-between items-center text-sm">
+                    <div class="font-medium">Бесплатно</div>
+                    <button onclick="signUpEvent(3, this)" class="text-violet-700 hover:text-violet-900 font-semibold flex items-center gap-x-1 text-xs">ЗАПИСАТЬСЯ <i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOYALTY -->
+    <section id="loyalty" class="max-w-7xl mx-auto px-6 py-16 border-t border-[#E8DFD0]">
+        <div class="grid md:grid-cols-12 gap-8 items-center bg-gradient-to-br from-[#6B4423] to-[#5A3820] rounded-3xl p-10 text-white">
+            <div class="md:col-span-7">
+                <div class="uppercase text-xs tracking-[3px] opacity-75">ПРОГРАММА ЛОЯЛЬНОСТИ</div>
+                <h2 class="text-5xl font-black mt-2">Кофе-Принт Club</h2>
+                <p class="mt-4 max-w-md text-white/90">10% бонусов на все покупки. Бонусы сгорают только через 6 месяцев. Специальные предложения для студентов и семей.</p>
+                
+                <div class="mt-8">
+                    <button onclick="showLoyaltyModal()" class="px-9 py-4 bg-white text-[#6B4423] font-bold rounded-3xl flex items-center gap-x-3 hover:bg-[#FEF3C7]">
+                        <span>Присоединиться бесплатно</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="md:col-span-5 bg-white/10 backdrop-blur rounded-2xl p-7 text-sm">
+                <div class="font-bold mb-4">Как это работает:</div>
+                <div class="space-y-3 text-white/90">
+                    <div class="flex gap-4"><span class="font-mono font-bold w-6">01</span> <span>Регистрируешься по номеру телефона или через Telegram</span></div>
+                    <div class="flex gap-4"><span class="font-mono font-bold w-6">02</span> <span>Получаешь 50 приветственных бонусов</span></div>
+                    <div class="flex gap-4"><span class="font-mono font-bold w-6">03</span> <span>10% от каждой покупки возвращается на баланс</span></div>
+                    <div class="flex gap-4"><span class="font-mono font-bold w-6">04</span> <span>Студенты +20% бонусов, семьи — персональные предложения</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="max-w-7xl mx-auto px-6 py-16">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div>
+                <h3 class="text-4xl font-black">Приходи к нам</h3>
+                <div class="mt-8 space-y-6">
+                    <div class="flex gap-5">
+                        <i class="fa-solid fa-map-marker-alt text-3xl text-[#D35400] mt-1"></i>
+                        <div>
+                            <div class="font-semibold">Folkungagatan 42, 116 45 Stockholm</div>
+                            <div class="text-sm text-[#8B5E3C]">Метро Medborgarplatsen • 4 минуты пешком</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-5">
+                        <i class="fa-solid fa-clock text-3xl text-[#D35400] mt-1"></i>
+                        <div>
+                            <div class="font-semibold">Ежедневно 07:00 — 22:00</div>
+                            <div class="text-sm text-[#8B5E3C]">Печать и копирование — круглосуточно (самообслуживание)</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-5">
+                        <i class="fa-solid fa-phone text-3xl text-[#D35400] mt-1"></i>
+                        <div>
+                            <a href="tel:+46812345678" class="font-semibold hover:underline">08-123 45 67</a>
+                            <div class="text-sm text-[#8B5E3C]">WhatsApp / Telegram тоже</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-10">
+                    <div class="uppercase text-xs font-bold tracking-widest mb-3">Мы в соцсетях</div>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-11 h-11 flex items-center justify-center border border-[#E8DFD0] hover:bg-[#FEF3C7] rounded-2xl"><i class="fa-brands fa-instagram text-xl"></i></a>
+                        <a href="#" class="w-11 h-11 flex items-center justify-center border border-[#E8DFD0] hover:bg-[#FEF3C7] rounded-2xl"><i class="fa-brands fa-telegram text-xl"></i></a>
+                        <a href="#" class="w-11 h-11 flex items-center justify-center border border-[#E8DFD0] hover:bg-[#FEF3C7] rounded-2xl"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl border border-[#E8DFD0]">
+                <h4 class="font-bold mb-6">Напишите нам</h4>
+                <form onsubmit="submitContactForm(event)">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="Имя" class="border border-[#E8DFD0] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:border-[#D35400]">
+                        <input type="tel" placeholder="Телефон" class="border border-[#E8DFD0] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:border-[#D35400]">
+                    </div>
+                    <textarea placeholder="Ваше сообщение..." rows="4" class="mt-4 w-full border border-[#E8DFD0] rounded-3xl px-5 py-4 text-sm focus:outline-none focus:border-[#D35400]"></textarea>
+                    
+                    <button type="submit" class="mt-4 w-full py-4 bg-[#6B4423] text-white font-semibold rounded-3xl hover:bg-black transition">Отправить сообщение</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#3F2A1D] text-white/70 py-12 text-sm">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-y-10">
+            <div class="md:col-span-5">
+                <div class="flex items-center gap-x-3 mb-4">
+                    <div class="w-9 h-9 coffee-gradient rounded-2xl flex items-center justify-center">
+                        <i class="fa-solid fa-mug-hot text-white"></i>
+                    </div>
+                    <span class="font-bold text-white text-2xl tracking-tight">Кофе-Принт</span>
+                </div>
+                <div class="max-w-xs">Гибридная кофейня и копицентр в Стокгольме. Мы помогаем учиться, творить и проводить время с близкими.</div>
+                
+                <div class="mt-8 text-xs">© 2026 Кофе-Принт AB. Все права защищены.</div>
+            </div>
+            
+            <div class="md:col-span-3">
+                <div class="font-semibold text-white mb-4">Навигация</div>
+                <div class="space-y-2">
+                    <a href="#menu" class="block hover:text-white">Меню и цены</a>
+                    <a href="#print" class="block hover:text-white">Услуги печати</a>
+                    <a href="#spaces" class="block hover:text-white">Зоны и бронирование</a>
+                    <a href="#events" class="block hover:text-white">События</a>
+                </div>
+            </div>
+            
+            <div class="md:col-span-4">
+                <div class="font-semibold text-white mb-4">Для управляющего</div>
+                <button onclick="showManagerDashboard()" class="flex items-center gap-x-2 text-xs px-5 py-2.5 border border-white/30 hover:bg-white/10 rounded-2xl">
+                    <i class="fa-solid fa-lock mr-2"></i> 
+                    <span>Войти в панель управления</span>
+                </button>
+                
+                <div class="mt-8 text-xs">Сделано с ❤️ для студентов, школьников и семей Стокгольма</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART MODAL -->
+    <div id="cart-modal" onclick="if (event.target.id === 'cart-modal') hideCart()" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-end md:items-center justify-center">
+        <div onclick="event.stopImmediatePropagation()" class="bg-white w-full md:w-[440px] md:rounded-3xl md:m-4 rounded-t-3xl p-7 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div class="font-black text-3xl">Ваша корзина</div>
+                <button onclick="hideCart()" class="text-3xl leading-none text-[#8B5E3C]">×</button>
+            </div>
+            
+            <div id="cart-items" class="flex-1 overflow-auto space-y-4 pr-2 service-grid"></div>
+            
+            <div class="pt-6 border-t mt-auto">
+                <div class="flex justify-between font-bold text-xl mb-6">
+                    <span>Итого</span>
+                    <span id="cart-total">0 SEK</span>
+                </div>
+                
+                <button onclick="checkout()" class="w-full py-4 bg-[#D35400] hover:bg-[#E85D04] text-white font-bold rounded-3xl flex justify-center items-center gap-x-2">
+                    ОФОРМИТЬ ЗАКАЗ
+                </button>
+                <div class="text-center text-xs mt-3 text-[#8B5E3C]">Оплата при получении или онлайн • Доставка по Стокгольму 49 SEK</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANAGER DASHBOARD MODAL -->
+    <div id="manager-modal" onclick="if (event.target.id === 'manager-modal') hideManagerDashboard()" class="hidden fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="bg-white w-full max-w-6xl rounded-3xl shadow-2xl max-h-[92vh] overflow-hidden flex flex-col">
+            
+            <!-- Dashboard Header -->
+            <div class="px-8 py-5 border-b flex items-center justify-between bg-[#6B4423] text-white">
+                <div class="flex items-center gap-x-4">
+                    <div class="w-9 h-9 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold">Панель управления • Кофе-Принт</div>
+                        <div class="text-xs opacity-75">1 июня 2026 • 01:05</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-x-4">
+                    <div class="text-xs bg-white/20 px-3 py-1 rounded">Администратор: Анна Линдквист</div>
+                    <button onclick="hideManagerDashboard()" class="text-3xl leading-none px-2">×</button>
+                </div>
+            </div>
+            
+            <div class="p-8 overflow-auto flex-1">
+                <!-- KPIs -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card bg-white border border-[#E8DFD0] rounded-2xl p-5">
+                        <div class="text-xs text-[#8B5E3C]">ВЫРУЧКА СЕГОДНЯ</div>
+                        <div class="text-4xl font-black mt-2 tabular-nums" id="dash-revenue">18 420</div>
+                        <div class="text-emerald-600 text-xs flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> +34% к вчера</div>
+                    </div>
+                    <div class="stat-card bg-white border border-[#E8DFD0] rounded-2xl p-5">
+                        <div class="text-xs text-[#8B5E3C]">ПОСЕТИТЕЛИ</div>
+                        <div class="text-4xl font-black mt-2 tabular-nums" id="dash-visitors">187</div>
+                        <div class="text-emerald-600 text-xs flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> +19 человек</div>
+                    </div>
+                    <div class="stat-card bg-white border border-[#E8DFD0] rounded-2xl p-5">
+                        <div class="text-xs text-[#8B5E3C]">ЗАКАЗОВ ПЕЧАТИ</div>
+                        <div class="text-4xl font-black mt-2 tabular-nums" id="dash-prints">94</div>
+                        <div class="text-emerald-600 text-xs flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> 12 480 стр.</div>
+                    </div>
+                    <div class="stat-card bg-white border border-[#E8DFD0] rounded-2xl p-5">
+                        <div class="text-xs text-[#8B5E3C]">СРЕДНИЙ ЧЕК</div>
+                        <div class="text-4xl font-black mt-2 tabular-nums" id="dash-avg">98</div>
+                        <div class="text-emerald-600 text-xs flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> +7 SEK</div>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-5 gap-6">
+                    <!-- Charts -->
+                    <div class="md:col-span-3 bg-white border border-[#E8DFD0] rounded-2xl p-6">
+                        <div class="flex justify-between mb-4">
+                            <div class="font-semibold">Выручка по часам</div>
+                            <div class="text-xs text-[#8B5E3C]">Сегодня</div>
+                        </div>
+                        <canvas id="revenue-chart" height="90"></canvas>
+                    </div>
+                    
+                    <div class="md:col-span-2 bg-white border border-[#E8DFD0] rounded-2xl p-6">
+                        <div class="font-semibold mb-4">Популярные позиции</div>
+                        <canvas id="popular-chart" height="140"></canvas>
+                    </div>
+                    
+                    <!-- Recent Orders -->
+                    <div class="md:col-span-5 bg-white border border-[#E8DFD0] rounded-2xl p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="font-semibold">Последние заказы</div>
+                            <button onclick="refreshOrders()" class="text-xs px-4 py-1 border rounded-2xl hover:bg-[#FEF3C7]">Обновить</button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="text-left text-xs text-[#8B5E3C] border-b">
+                                        <th class="pb-3 font-normal">Время</th>
+                                        <th class="pb-3 font-normal">Клиент</th>
+                                        <th class="pb-3 font-normal">Заказ</th>
+                                        <th class="pb-3 font-normal text-right">Сумма</th>
+                                        <th class="pb-3 font-normal">Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table" class="text-sm divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t px-8 py-4 flex justify-end gap-3 bg-[#FDF8F3]">
+                <button onclick="exportReport()" class="px-6 py-2 text-sm font-semibold border rounded-2xl flex items-center gap-x-2">
+                    <i class="fa-solid fa-download"></i> <span>Экспорт отчёта</span>
+                </button>
+                <button onclick="hideManagerDashboard()" class="px-8 py-2 text-sm font-semibold bg-[#6B4423] text-white rounded-2xl">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-emerald-600 text-white px-8 py-3 rounded-3xl shadow-xl flex items-center gap-x-3 z-[200]">
+        <i class="fa-solid fa-check-circle"></i>
+        <span id="toast-text">Готово!</span>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent', '#D35400');
+        }
+        
+        // Menu data
+        let menuItems = [
+            { id: 1, name: "Эспрессо", price: 35, category: "coffee", desc: "Классика в чистом виде", icon: "fa-mug-hot", badge: null },
+            { id: 2, name: "Капучино", price: 49, category: "coffee", desc: "С нежной молочной пенкой", icon: "fa-mug-hot", badge: "Хит" },
+            { id: 3, name: "Латте с печатьь", price: 75, category: "coffee", desc: "Любое изображение на пенке", icon: "fa-mug-hot", badge: "Уникально" },
+            { id: 4, name: "Флэт уайт", price: 52, category: "coffee", desc: "Австралийский стиль", icon: "fa-mug-hot", badge: null },
+            { id: 5, name: "Горячий шоколад", price: 42, category: "drinks", desc: "С зефиром и корицей", icon: "fa-mug-hot", badge: null },
+            { id: 6, name: "Матча латте", price: 58, category: "drinks", desc: "Японский зелёный чай", icon: "fa-leaf", badge: null },
+            { id: 7, name: "Смузи ягодный", price: 55, category: "drinks", desc: "Клубника, банан, черника", icon: "fa-blender", badge: "Детский" },
+            { id: 8, name: "Круассан с миндалём", price: 48, category: "food", desc: "Свежая выпечка", icon: "fa-bread-slice", badge: null },
+            { id: 9, name: "Авокадо тост", price: 69, category: "food", desc: "С яйцом пашот и чили", icon: "fa-bread-slice", badge: "Здорово" },
+            { id: 10, name: "Суп дня", price: 65, category: "food", desc: "Тыквенный крем-суп", icon: "fa-bowl-food", badge: null },
+            { id: 11, name: "Детский набор «Малыш»", price: 79, category: "kids", desc: "Сок + печенье + раскраска", icon: "fa-child", badge: "Хит" },
+            { id: 12, name: "Панкейки с ягодами", price: 85, category: "kids", desc: "3 шт + сироп + мороженое", icon: "fa-ice-cream", badge: null },
+        ];
+        
+        let cart = [];
+        
+        function renderMenu(filter = 'all') {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            
+            let filtered = menuItems;
+            if (filter !== 'all') {
+                filtered = menuItems.filter(item => item.category === filter);
+            }
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `menu-card bg-white border border-[#E8DFD0] rounded-3xl p-5 flex flex-col group`;
+                
+                let badgeHTML = '';
+                if (item.badge) {
+                    const color = item.badge === 'Хит' ? 'bg-rose-500' : item.badge === 'Уникально' ? 'bg-violet-500' : 'bg-emerald-500';
+                    badgeHTML = `<div class="absolute top-4 right-4 ${color} text-white text-[10px] font-bold px-3 py-px rounded-full">${item.badge}</div>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="relative mb-5">
+                        <div class="w-full h-40 bg-gradient-to-br from-[#FEF3C7] to-[#F5E8C7] rounded-2xl flex items-center justify-center text-7xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid ${item.icon} text-[#6B4423]"></i>
+                        </div>
+                        ${badgeHTML}
+                    </div>
+                    
+                    <div class="flex-1">
+                        <div class="font-bold text-xl">${item.name}</div>
+                        <div class="text-sm text-[#8B5E3C] line-clamp-2 mt-1">${item.desc}</div>
+                    </div>
+                    
+                    <div class="flex justify-between items-end mt-5">
+                        <div>
+                            <span class="text-3xl font-black tabular-nums">${item.price}</span>
+                            <span class="text-xs font-medium text-[#8B5E3C]">SEK</span>
+                        </div>
+                        
+                        <button onclick="addToCart(${item.id}, event)" 
+                                class="px-6 py-2.5 bg-[#6B4423] hover:bg-black active:scale-95 transition text-white text-sm font-bold rounded-2xl flex items-center gap-x-2">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>В корзину</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        function filterMenu(category) {
+            // Update active button
+            document.querySelectorAll('.menu-filter').forEach(el => {
+                el.classList.remove('active', 'bg-[#6B4423]', 'text-white');
+                el.classList.add('hover:bg-[#FEF3C7]');
+                if (el.getAttribute('data-filter') === category) {
+                    el.classList.add('active', 'bg-[#6B4423]', 'text-white');
+                    el.classList.remove('hover:bg-[#FEF3C7]');
+                }
+            });
+            
+            renderMenu(category);
+        }
+        
+        function addToCart(itemId, e) {
+            e.stopImmediatePropagation();
+            
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+            
+            const existing = cart.find(c => c.id === itemId);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({...item, qty: 1});
+            }
+            
+            updateCartCount();
+            showToast(`${item.name} добавлен в корзину!`);
+            
+            // Confetti effect
+            createConfetti(e.currentTarget || e.target);
+        }
+        
+        function createConfetti(element) {
+            const colors = ['#D35400', '#1ABC9C', '#6B4423'];
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.left = `${element.getBoundingClientRect().left + Math.random() * 60}px`;
+                particle.style.top = `${element.getBoundingClientRect().top + Math.random() * 30}px`;
+                particle.style.width = '7px';
+                particle.style.height = '7px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = '50%';
+                particle.style.zIndex = '9999';
+                particle.style.pointerEvents = 'none';
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.animate([
+                        { transform: 'translateY(0) scale(1)', opacity: 1 },
+                        { transform: `translateY(${80 + Math.random() * 60}px) scale(0.2)`, opacity: 0 }
+                    ], {
+                        duration: 650 + Math.random() * 300,
+                        easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+                    }).onfinish = () => particle.remove();
+                }, 10);
+            }
+        }
+        
+        function updateCartCount() {
+            const countEl = document.getElementById('cart-count');
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            countEl.textContent = totalItems;
+            
+            if (totalItems > 0) {
+                countEl.style.display = 'flex';
+            } else {
+                countEl.style.display = 'none';
+            }
+        }
+        
+        function showCart() {
+            const modal = document.getElementById('cart-modal');
+            const itemsContainer = document.getElementById('cart-items');
+            itemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-64 text-center">
+                        <i class="fa-solid fa-shopping-bag text-7xl text-[#E8DFD0]"></i>
+                        <div class="mt-6 font-semibold">Корзина пуста</div>
+                        <div class="text-sm text-[#8B5E3C]">Добавьте что-нибудь вкусное!</div>
+                        <button onclick="hideCart(); document.getElementById('menu').scrollIntoView({behavior:'smooth'})" 
+                                class="mt-6 px-6 py-2 text-sm border border-[#6B4423] text-[#6B4423] rounded-2xl">Перейти в меню</button>
+                    </div>
+                `;
+                document.getElementById('cart-total').textContent = '0 SEK';
+            } else {
+                let total = 0;
+                
+                cart.forEach((item, index) => {
+                    total += item.price * item.qty;
+                    
+                    const div = document.createElement('div');
+                    div.className = `flex gap-4 border-b pb-4 ${index === cart.length-1 ? 'border-none' : ''}`;
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <div class="font-semibold">${item.name}</div>
+                            <div class="text-xs text-[#8B5E3C]">${item.desc}</div>
+                            
+                            <div class="flex items-center gap-x-4 mt-3">
+                                <div class="flex items-center border border-[#E8DFD0] rounded-xl text-sm">
+                                    <button onclick="changeCartQty(${index}, -1)" class="w-8 h-8 flex items-center justify-center hover:bg-[#FEF3C7] rounded-l-xl">−</button>
+                                    <span class="px-4 font-mono">${item.qty}</span>
+                                    <button onclick="changeCartQty(${index}, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-[#FEF3C7] rounded-r-xl">+</button>
+                                </div>
+                                
+                                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-600 text-xs flex items-center">
+                                    <i class="fa-solid fa-trash mr-1"></i> Удалить
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right font-bold tabular-nums whitespace-nowrap">
+                            ${(item.price * item.qty).toLocaleString()} <span class="font-normal text-xs">SEK</span>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(div);
+                });
+                
+                document.getElementById('cart-total').textContent = `${total} SEK`;
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        function changeCartQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty < 1) cart[index].qty = 1;
+            showCart();
+            updateCartCount();
+        }
+        
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            showCart();
+            updateCartCount();
+        }
+        
+        function hideCart() {
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+        
+        function checkout() {
+            const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            
+            hideCart();
+            
+            setTimeout(() => {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[200] p-6';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-3xl max-w-md w-full p-9 text-center">
+                        <div class="mx-auto w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                            <i class="fa-solid fa-check text-5xl text-emerald-600"></i>
+                        </div>
+                        
+                        <div class="text-3xl font-black">Заказ принят!</div>
+                        <div class="mt-3 text-lg">Номер заказа <span class="font-mono font-bold">#KP-${Math.floor(100000 + Math.random() * 900000)}</span></div>
+                        
+                        <div class="my-8 text-sm bg-[#FEF3C7] rounded-2xl p-5 text-left">
+                            <div class="font-semibold mb-2">Что дальше?</div>
+                            <div class="space-y-1 text-[#5C4634]">
+                                <div>• Готовность через 12–18 минут</div>
+                                <div>• Приходите к стойке или вызовите официанта</div>
+                                <div>• Бонусы начислены автоматически</div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="this.closest('.fixed').remove(); cart = []; updateCartCount(); showToast('Спасибо! Ждём вас снова ❤️')" 
+                                class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-3xl">Отлично, спасибо!</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }, 280);
+        }
+        
+        // Print calculator
+        let currentPrintType = 'bw';
+        
+        function selectPrintType(element, type) {
+            document.querySelectorAll('#print .print-option').forEach(el => el.classList.remove('active', 'border-[#1ABC9C]'));
+            element.classList.add('active', 'border-[#1ABC9C]');
+            currentPrintType = type;
+            calculatePrintPrice();
+        }
+        
+        function changePages(delta) {
+            const input = document.getElementById('pages');
+            let val = parseInt(input.value) || 1;
+            val += delta;
+            if (val < 1) val = 1;
+            input.value = val;
+            calculatePrintPrice();
+        }
+        
+        function calculatePrintPrice() {
+            const pages = parseInt(document.getElementById('pages').value) || 1;
+            const duplex = document.getElementById('duplex').checked;
+            const laminate = document.getElementById('laminate').checked;
+            const staple = document.getElementById('staple').checked;
+            const bind = document.getElementById('bind').checked;
+            const express = document.getElementById('express').checked;
+            
+            let pricePerPage = 2.5; // BW default
+            if (currentPrintType === 'color') pricePerPage = 6;
+            if (currentPrintType === 'photo') pricePerPage = 18;
+            
+            let total = pages * pricePerPage;
+            
+            // Duplex discount
+            if (duplex && pages > 1) {
+                total *= 0.9;
+            }
+            
+            if (laminate) total += pages * 15;
+            if (staple) total += 8;
+            if (bind) total += 45;
+            if (express) total += 25;
+            
+            // Minimum
+            if (total < 25) total = 25;
+            
+            document.getElementById('print-total').textContent = Math.round(total);
+        }
+        
+        function addPrintToCart() {
+            const pages = parseInt(document.getElementById('pages').value) || 1;
+            const total = parseInt(document.getElementById('print-total').textContent);
+            
+            const printItem = {
+                id: Date.now(),
+                name: `Печать (${currentPrintType === 'bw' ? 'Ч/Б' : currentPrintType === 'color' ? 'Цветная' : 'Фото'})`,
+                desc: `${pages} стр. • ${document.getElementById('duplex').checked ? 'Двусторонняя' : 'Односторонняя'}`,
+                price: total,
+                qty: 1,
+                isPrint: true
+            };
+            
+            cart.push(printItem);
+            updateCartCount();
+            showToast('Печать добавлена в корзину!');
+            
+            // Reset form a bit
+            document.getElementById('pages').value = 10;
+            calculatePrintPrice();
+        }
+        
+        function handleFileUpload(e) {
+            const files = e.target.files;
+            const container = document.getElementById('uploaded-files');
+            
+            Array.from(files).forEach(file => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-[#FEF3C7] text-sm px-4 py-2 rounded-2xl';
+                div.innerHTML = `
+                    <div class="flex items-center gap-x-3 truncate">
+                        <i class="fa-solid fa-file text-[#D35400]"></i>
+                        <span class="truncate">${file.name}</span>
+                        <span class="text-xs text-[#8B5E3C]">(${Math.round(file.size / 1024)} KB)</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 px-2">×</button>
+                `;
+                container.appendChild(div);
+            });
+            
+            // Auto calculate if not done
+            if (!document.getElementById('print-total').textContent || document.getElementById('print-total').textContent === '0') {
+                calculatePrintPrice();
+            }
+        }
+        
+        function submitPrintOrder() {
+            const container = document.getElementById('uploaded-files');
+            const files = container.children.length;
+            
+            if (files === 0) {
+                showToast('Пожалуйста, загрузите файлы для печатьь', true);
+                return;
+            }
+            
+            const total = document.getElementById('print-total').textContent;
+            
+            const orderModal = document.createElement('div');
+            orderModal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[200] p-6';
+            orderModal.innerHTML = `
+                <div class="bg-white rounded-3xl p-9 max-w-md w-full text-center">
+                    <i class="fa-solid fa-check-circle text-6xl text-emerald-500 mb-5"></i>
+                    <div class="text-2xl font-bold">Заказ на печать отправлен!</div>
+                    <div class="mt-2 text-sm">Номер заказа <span class="font-mono">#PR-${Math.floor(10000 + Math.random() * 90000)}</span></div>
+                    
+                    <div class="bg-[#FEF3C7] rounded-2xl p-4 mt-6 text-left text-sm">
+                        <div>Готовность: <span class="font-bold">7–12 минут</span></div>
+                        <div class="mt-1">Стоимость: <span class="font-bold">${total} SEK</span></div>
+                        <div class="text-xs mt-3 text-[#8B5E3C]">Файлы отправлены на принтер. Вы получите SMS когда будет готово.</div>
+                    </div>
+                    
+                    <button onclick="this.closest('.fixed').remove(); document.getElementById('uploaded-files').innerHTML=''; showToast('Спасибо! Ваш заказ в работе.')" 
+                            class="mt-7 w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-3xl">Понятно</button>
+                </div>
+            `;
+            document.body.appendChild(orderModal);
+        }
+        
+        function quickPrintService(type) {
+            let message = '';
+            let price = 0;
+            
+            switch(type) {
+                case 'diploma':
+                    message = 'Переплёт диплома/диссертации';
+                    price = 149;
+                    break;
+                case 'photo':
+                    message = 'Фотокнига 20 страниц';
+                    price = 299;
+                    break;
+                case 'mug':
+                    message = 'Печать на кружке (1 шт.)';
+                    price = 189;
+                    break;
+                case 'kids':
+                    message = 'Печать детский рисунков (до 10 стр бесплатно)';
+                    price = 0;
+                    break;
+            }
+            
+            showToast(`Выбрана услуга: ${message}. Откройте калькулятор для точного расчёта.`);
+            
+            // Scroll to print section
+            document.getElementById('print').scrollIntoView({ behavior: 'smooth' });
+            
+            // Pre-fill some values
+            setTimeout(() => {
+                if (type === 'diploma') {
+                    document.getElementById('pages').value = 50;
+                    document.getElementById('bind').checked = true;
+                    selectPrintType(document.getElementById('type-color'), 'color');
+                } else if (type === 'photo') {
+                    document.getElementById('pages').value = 20;
+                    selectPrintType(document.getElementById('type-photo'), 'photo');
+                }
+                calculatePrintPrice();
+            }, 800);
+        }
+        
+        // Zone booking
+        function bookZone(zone) {
+            const zoneNames = {
+                'student': 'Студенческая зона',
+                'family': 'Семейный уголок',
+                'creative': 'Творческая мастерская'
+            };
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-5';
+            modal.innerHTML = `
+                <div class="bg-white rounded-3xl max-w-md w-full p-8">
+                    <div class="font-black text-2xl mb-1">Бронирование: ${zoneNames[zone]}</div>
+                    <div class="text-sm text-[#8B5E3C] mb-6">Выберите удобное время</div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-semibold">Дата</label>
+                            <input type="date" value="2026-06-03" class="w-full border border-[#E8DFD0] rounded-2xl px-5 py-3 mt-1 text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-semibold">Время</label>
+                                <select class="w-full border border-[#E8DFD0] rounded-2xl px-5 py-3 mt-1 text-sm">
+                                    <option>09:00 – 11:00</option>
+                                    <option>11:30 – 13:30</option>
+                                    <option selected>14:00 – 16:00</option>
+                                    <option>16:30 – 18:30</option>
+                                    <option>19:00 – 21:00</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold">Количество человек</label>
+                                <input type="number" value="${zone === 'family' ? '3' : '1'}" class="w-full border border-[#E8DFD0] rounded-2xl px-5 py-3 mt-1 text-sm">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="text-xs font-semibold">Комментарий (опционально)</label>
+                            <textarea class="w-full border border-[#E8DFD0] rounded-2xl px-5 py-3 mt-1 text-sm" placeholder="Нужна розетка у окна / Детское кресло"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex gap-3">
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 py-3.5 border border-[#6B4423] text-[#6B4423] font-semibold rounded-2xl">Отмена</button>
+                        <button onclick="confirmBooking('${zone}', this)" class="flex-1 py-3.5 bg-[#1ABC9C] hover:bg-[#16A085] text-white font-bold rounded-2xl">Забронировать</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function confirmBooking(zone, btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Бронируем...';
+            
+            setTimeout(() => {
+                btn.closest('.fixed').remove();
+                showToast(`Место в зоне забронировано! Подтверждение отправлено в Telegram.`);
+                
+                // Add to fake bookings
+                if (!window.fakeBookings) window.fakeBookings = [];
+                window.fakeBookings.push({
+                    zone: zone,
+                    time: '14:00 – 16:00',
+                    date: '3 июня'
+                });
+            }, 1250);
+        }
+        
+        // Events signup
+        function signUpEvent(eventId, btn) {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Вы записаны!';
+                btn.classList.add('!text-emerald-600', '!border-emerald-600');
+                
+                showToast('Вы успешно записаны на событие! Ссылка в Telegram.');
+                
+                setTimeout(() => {
+                    if (btn) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.classList.remove('!text-emerald-600', '!border-emerald-600');
+                    }
+                }, 2800);
+            }, 900);
+        }
+        
+        // Loyalty
+        function showLoyaltyModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-5';
+            modal.innerHTML = `
+                <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden">
+                    <div class="coffee-gradient px-8 py-8 text-white text-center">
+                        <i class="fa-solid fa-gem text-5xl mb-4"></i>
+                        <div class="text-3xl font-black">Кофе-Принт Club</div>
+                        <div class="opacity-90">Присоединяйся и получай бонусы</div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="mb-6">
+                            <div class="text-sm mb-2 font-semibold">Ваш номер телефона</div>
+                            <input id="phone-input" type="tel" value="+46 70 123 45 67" class="w-full border border-[#E8DFD0] rounded-2xl px-5 py-3.5 text-lg">
+                        </div>
+                        
+                        <div class="flex items-center gap-3 mb-8">
+                            <input type="checkbox" checked class="accent-[#D35400]">
+                            <span class="text-xs">Я согласен получать SMS и предложения (можно отписаться)</span>
+                        </div>
+                        
+                        <button onclick="joinLoyalty(this)" class="w-full py-4 bg-[#D35400] text-white font-bold rounded-3xl">Присоединиться и получить 50 бонусов</button>
+                        
+                        <div class="text-center mt-5 text-xs text-[#8B5E3C]">Уже есть карта? <span onclick="checkLoyaltyBalance()" class="text-[#D35400] cursor-pointer underline">Проверить баланс</span></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function joinLoyalty(btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Регистрируем...';
+            
+            setTimeout(() => {
+                btn.closest('.fixed').remove();
+                showToast('Добро пожаловать в Клуб! 50 бонусов зачислены на счёт.');
+                
+                // Fake balance
+                localStorage.setItem('loyaltyBalance', '245');
+            }, 1400);
+        }
+        
+        function checkLoyaltyBalance() {
+            const balance = localStorage.getItem('loyaltyBalance') || '128';
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[100]';
+            modal.innerHTML = `
+                <div class="bg-white rounded-3xl p-9 max-w-xs text-center">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <div class="text-4xl font-black text-emerald-600">${balance}</div>
+                    <div class="font-bold -mt-1">бонусов</div>
+                    <div class="text-xs mt-6 text-[#8B5E3C]">Эквивалентно ≈ 122 SEK</div>
+                    
+                    <button onclick="this.closest('.fixed').remove()" class="mt-8 w-full py-3 border text-sm font-semibold rounded-2xl">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Contact form
+        function submitContactForm(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const original = btn.innerHTML;
+            btn.innerHTML = 'Отправляем...';
+            
+            setTimeout(() => {
+                btn.closest('form').reset();
+                btn.innerHTML = original;
+                showToast('Сообщение отправлено! Мы ответим в течение часа.');
+            }, 1100);
+        }
+        
+        // Manager Dashboard
+        let revenueChartInstance = null;
+        let popularChartInstance = null;
+        
+        function showManagerDashboard() {
+            const modal = document.getElementById('manager-modal');
+            modal.style.display = 'flex';
+            
+            // Fake live numbers
+            animateNumber('dash-revenue', 18420, 21560);
+            animateNumber('dash-visitors', 187, 214);
+            animateNumber('dash-prints', 94, 112);
+            animateNumber('dash-avg', 98, 104);
+            
+            // Charts
+            setTimeout(() => {
+                initRevenueChart();
+                initPopularChart();
+                renderOrdersTable();
+            }, 300);
+        }
+        
+        function hideManagerDashboard() {
+            const modal = document.getElementById('manager-modal');
+            modal.style.display = 'none';
+            
+            // Destroy charts to prevent memory leaks
+            if (revenueChartInstance) {
+                revenueChartInstance.destroy();
+                revenueChartInstance = null;
+            }
+            if (popularChartInstance) {
+                popularChartInstance.destroy();
+                popularChartInstance = null;
+            }
+        }
+        
+        function animateNumber(id, from, to) {
+            const el = document.getElementById(id);
+            let current = from;
+            const increment = (to - from) / 18;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= to) || (increment < 0 && current <= to)) {
+                    current = to;
+                    clearInterval(timer);
+                }
+                el.textContent = Math.round(current).toLocaleString();
+            }, 60);
+        }
+        
+        function initRevenueChart() {
+            const ctx = document.getElementById('revenue-chart');
+            
+            if (revenueChartInstance) revenueChartInstance.destroy();
+            
+            revenueChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00'],
+                    datasets: [{
+                        label: 'Выручка (SEK)',
+                        data: [420, 1850, 3120, 2890, 3640, 2980, 4120, 1820],
+                        borderColor: '#D35400',
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true,
+                        backgroundColor: 'rgba(211, 84, 0, 0.08)',
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#D35400',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#F5E8C7', lineWidth: 0.5 }, ticks: { color: '#8B5E3C', font: { size: 10 } } },
+                        y: { grid: { color: '#F5E8C7', lineWidth: 0.5 }, ticks: { color: '#8B5E3C', font: { size: 10 }, stepSize: 1000, callback: v => v + ' kr' } }
+                    }
+                }
+            });
+        }
+        
+        function initPopularChart() {
+            const ctx = document.getElementById('popular-chart');
+            
+            if (popularChartInstance) popularChartInstance.destroy();
+            
+            popularChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Латте с печатьь', 'Ч/Б печать', 'Капучино', 'Переплёт', 'Детский набор'],
+                    datasets: [{
+                        data: [32, 28, 19, 12, 9],
+                        backgroundColor: ['#D35400', '#1ABC9C', '#6B4423', '#8B5E3C', '#E85D04'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '68%',
+                    plugins: {
+                        legend: { 
+                            position: 'right',
+                            labels: { boxWidth: 10, padding: 15, font: { size: 11 }, color: '#5C4634' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderOrdersTable() {
+            const tbody = document.getElementById('orders-table');
+            tbody.innerHTML = '';
+            
+            const orders = [
+                { time: '00:48', client: 'Эмма С.', order: 'Латте с печатьь + 12 стр ч/б', amount: '87', status: 'Готов' },
+                { time: '00:41', client: 'Оскар Б.', order: 'Переплёт диплома (48 стр)', amount: '189', status: 'В работе' },
+                { time: '00:29', client: 'Семья Линд', order: '2× Латте + Детский набор', amount: '173', status: 'Готов' },
+                { time: '00:14', client: 'Алиса К.', order: 'Фотокнига 24 стр', amount: '349', status: 'Готов' },
+            ];
+            
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 font-mono text-xs text-[#8B5E3C]">${order.time}</td>
+                    <td class="py-3 font-medium">${order.client}</td>
+                    <td class="py-3 text-sm">${order.order}</td>
+                    <td class="py-3 text-right font-bold tabular-nums">${order.amount} SEK</td>
+                    <td class="py-3">
+                        <span class="px-3 py-px text-xs rounded-full ${order.status === 'Готов' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${order.status}</span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function refreshOrders() {
+            const tbody = document.getElementById('orders-table');
+            tbody.style.transition = 'opacity 0.2s';
+            tbody.style.opacity = '0.3';
+            
+            setTimeout(() => {
+                renderOrdersTable();
+                tbody.style.opacity = '1';
+                showToast('Данные обновлены');
+            }, 380);
+        }
+        
+        function exportReport() {
+            showToast('Отчёт за сегодня сформирован и отправлен на почту Анны');
+            
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.download = 'Кофе-Принт_отчёт_01-06-2026.pdf';
+                // In real would generate PDF, here just toast
+            }, 800);
+        }
+        
+        // Toast notification
+        function showToast(message, error = false) {
+            const toast = document.getElementById('toast');
+            const text = document.getElementById('toast-text');
+            
+            text.textContent = message;
+            toast.style.background = error ? '#DC2626' : '#059669';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.4s ease';
+                toast.style.opacity = '0';
+                
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                    toast.style.opacity = '1';
+                    toast.style.transition = '';
+                }, 300);
+            }, 2800);
+        }
+        
+        // Mobile nav
+        function toggleMobileNav() {
+            const nav = document.createElement('div');
+            nav.className = 'fixed inset-0 bg-black/70 z-[90] md:hidden';
+            nav.innerHTML = `
+                <div class="bg-white w-72 h-full p-8">
+                    <div class="flex justify-between items-center mb-10">
+                        <span class="font-bold text-2xl" style="color: #6B4423;">Кофе-Принт</span>
+                        <button onclick="this.closest('.fixed').remove()" class="text-4xl leading-none">×</button>
+                    </div>
+                    
+                    <div class="space-y-5 text-lg font-medium">
+                        <a href="#menu" class="block py-1" onclick="this.closest('.fixed').remove()">Меню</a>
+                        <a href="#print" class="block py-1" onclick="this.closest('.fixed').remove()">Печать</a>
+                        <a href="#spaces" class="block py-1" onclick="this.closest('.fixed').remove()">Пространства</a>
+                        <a href="#events" class="block py-1" onclick="this.closest('.fixed').remove()">События</a>
+                        <a href="#loyalty" class="block py-1" onclick="this.closest('.fixed').remove()">Лояльность</a>
+                    </div>
+                    
+                    <div class="mt-12 pt-8 border-t">
+                        <button onclick="showManagerDashboard(); this.closest('.fixed').remove()" class="flex items-center gap-x-3 w-full py-3 px-5 text-left border border-[#E8DFD0] rounded-2xl">
+                            <i class="fa-solid fa-chart-line text-[#6B4423]"></i>
+                            <span>Панель управляющего</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(nav);
+        }
+        
+        // Initialize everything
+        function initializeSite() {
+            initializeTailwind();
+            
+            // Render initial menu
+            renderMenu('all');
+            
+            // Set initial print type active
+            setTimeout(() => {
+                const bwOption = document.getElementById('type-bw');
+                if (bwOption) {
+                    bwOption.classList.add('active', 'border-[#1ABC9C]');
+                }
+                calculatePrintPrice();
+            }, 200);
+            
+            // Update nav on scroll
+            const nav = document.getElementById('nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 30) {
+                    nav.classList.add('nav-scrolled', 'bg-white/95', 'backdrop-blur');
+                } else {
+                    nav.classList.remove('nav-scrolled', 'bg-white/95', 'backdrop-blur');
+                }
+            });
+            
+            // Keyboard shortcut for manager (demo)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '?' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    showManagerDashboard();
+                }
+            });
+            
+            // Welcome message for manager hint
+            setTimeout(() => {
+                const hint = document.createElement('div');
+                hint.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#6B4423;color:white;font-size:10px;padding:4px 12px;border-radius:9999px;opacity:0.85;z-index:50';
+                hint.innerHTML = 'Нажмите "?" для панели управляющего';
+                document.body.appendChild(hint);
+                
+                setTimeout(() => {
+                    hint.style.transition = 'opacity 0.6s';
+                    hint.style.opacity = '0';
+                    setTimeout(() => hint.remove(), 600);
+                }, 4200);
+            }, 6500);
+            
+            // Make sure print calculator works on load
+            const pagesInput = document.getElementById('pages');
+            if (pagesInput) {
+                pagesInput.addEventListener('input', calculatePrintPrice);
+            }
+            
+            // Fake some data in localStorage for loyalty
+            if (!localStorage.getItem('loyaltyBalance')) {
+                localStorage.setItem('loyaltyBalance', '128');
+            }
+            
+            console.log('%c[Кофе-Принт] Сайт успешно инициализирован. Максимально функциональная версия готова.', 'color:#8B5E3C');
+        }
+        
+        // Boot the site
+        window.onload = initializeSite;
+        
+        // Bonus: Make print total update live on all changes
+        setTimeout(() => {
+            const checkboxes = document.querySelectorAll('#print input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', calculatePrintPrice);
+            });
+        }, 400);
+    </script>
+</body>
+</html>
